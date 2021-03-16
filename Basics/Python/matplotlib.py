@@ -48,7 +48,7 @@ from IPython.display import Image
 #from folium.plugins import TimeSliderChoropleth
 #from branca.element import Template, MacroElement
 
-os.chdir("C:/Users/laguila/Google Drive/Programacion/Python/matplotlib")
+os.chdir("D:/MachineLearning/Basics/Python")
 def print_files():        
     for dirname, _, filenames in os.walk('datos'):
         for filename in filenames:
