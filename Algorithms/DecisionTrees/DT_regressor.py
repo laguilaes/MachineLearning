@@ -1,3 +1,50 @@
+#%% Decision Trees Regression
+#Rootsplit: entre primery segundo punto, segundo y tercero, etc. Tomar la media de los puntos
+#a la izda y dcha, calcular sum of squares residuals y repetir para todos los splits. 
+#Repetir este proceso a la izda y dcha de este rootsplit, iterativamente, hasta que el numero
+#de observaciones por leaf sea menor a un minimo (~7, ~20)
+
+#Missing data:
+#Most common option(mean)
+#Regresion con la variable mas correlacionada(numerica), o reemplazar con valor de variable mas correlacionada (categorica)
+import numpy as np
+from sklearn.tree import DecisionTreeRegressor
+import matplotlib.pyplot as plt
+
+# Create a random dataset
+rng = np.random.RandomState(1)
+X = np.sort(5 * rng.rand(80, 1), axis=0)
+y = np.sin(X).ravel()
+y[::5] += 3 * (0.5 - rng.rand(16))
+
+# Fit regression model
+regr_1 = DecisionTreeRegressor(max_depth=2)
+regr_2 = DecisionTreeRegressor(max_depth=5)
+regr_1.fit(X, y)
+regr_2.fit(X, y)
+
+# Predict
+X_test = np.arange(0.0, 5.0, 0.01)[:, np.newaxis]
+y_1 = regr_1.predict(X_test)
+y_2 = regr_2.predict(X_test)
+
+# Plot the results
+plt.figure()
+plt.scatter(X, y, s=20, edgecolor="black",
+            c="darkorange", label="data")
+plt.plot(X_test, y_1, color="cornflowerblue",
+         label="max_depth=2", linewidth=2)
+plt.plot(X_test, y_2, color="yellowgreen", label="max_depth=5", linewidth=2)
+plt.xlabel("data")
+plt.ylabel("target")
+plt.title("Decision Tree Regression")
+plt.legend()
+plt.show()
+
+
+
+#%%
+#%% DECISION TREE REGRESSOR
 import numpy as np
 import matplotlib.pyplot as plt
 

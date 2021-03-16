@@ -1,67 +1,35 @@
-import sys
-import sklearn
-import numpy as np
-import os
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-mpl.rc('axes', labelsize=14)
-mpl.rc('xtick', labelsize=12)
-mpl.rc('ytick', labelsize=12)
+#%% RANDOM FOREST 
+#Bootstrap(samples, sqrt(features)) +  decision tree + aggregating(voting, mean...) (BAgging = Bootstrapping + Agregating data)
+#OOB error(out of bag error) es el error al clasificar registros no usados en bagging
 
+#Missing values in train
+#Inicial: categorical: igual que la variable objetivo. Numerical: mean
+#Refinamiento: Run decision tree para cada registro. Repetir en cada tree. 
+#Matriz de similitud: registros similares en mismas hojas. Normalizar entre numero arboles
 
-#Generate some data
-from sklearn.model_selection import train_test_split
-from sklearn.datasets import make_moons
+#Classification
 
-X, y = make_moons(n_samples=500, noise=0.30, random_state=42)
-X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
-
-#Fit and predict Bagging Classifier
-from sklearn.ensemble import BaggingClassifier
-from sklearn.tree import DecisionTreeClassifier
-bag_clf = BaggingClassifier(
-    DecisionTreeClassifier(splitter="random", max_leaf_nodes=16, random_state=42),
-    n_estimators=500, max_samples=1.0, bootstrap=True, random_state=42)
-bag_clf.fit(X_train, y_train)
-y_pred = bag_clf.predict(X_test)
-
-#Train and predict Random Forest
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import make_classification
+X, y = make_classification(n_samples=1000, n_features=4,
+                           n_informative=2, n_redundant=0,
+                           random_state=0, shuffle=False)
+clf = RandomForestClassifier(max_depth=2, random_state=0)
+clf.fit(X, y)
 
-rnd_clf = RandomForestClassifier(n_estimators=500, max_leaf_nodes=16, random_state=42)
-rnd_clf.fit(X_train, y_train)
+print(clf.feature_importances_)
 
-y_pred_rf = rnd_clf.predict(X_test)
-np.sum(y_pred == y_pred_rf) / len(y_pred)
+print(clf.predict([[0, 0, 0, 0]]))
 
+#Regression
 
-#Visualize results
-from matplotlib.colors import ListedColormap
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.datasets import make_regression
+X, y = make_regression(n_features=4, n_informative=2,
+                       random_state=0, shuffle=False)
+regr = RandomForestRegressor(max_depth=2, random_state=0)
+regr.fit(X, y)
 
-def plot_decision_boundary(clf, X, y, axes=[-1.5, 2.45, -1, 1.5], alpha=0.5, contour=True):
-    x1s = np.linspace(axes[0], axes[1], 100)
-    x2s = np.linspace(axes[2], axes[3], 100)
-    x1, x2 = np.meshgrid(x1s, x2s)
-    X_new = np.c_[x1.ravel(), x2.ravel()]
-    y_pred = clf.predict(X_new).reshape(x1.shape)
-    custom_cmap = ListedColormap(['#fafab0','#9898ff','#a0faa0'])
-    plt.contourf(x1, x2, y_pred, alpha=0.3, cmap=custom_cmap)
-    if contour:
-        custom_cmap2 = ListedColormap(['#7d7d58','#4c4c7f','#507d50'])
-        plt.contour(x1, x2, y_pred, cmap=custom_cmap2, alpha=0.8)
-    plt.plot(X[:, 0][y==0], X[:, 1][y==0], "yo", alpha=alpha)
-    plt.plot(X[:, 0][y==1], X[:, 1][y==1], "bs", alpha=alpha)
-    plt.axis(axes)
-    plt.xlabel(r"$x_1$", fontsize=18)
-    plt.ylabel(r"$x_2$", fontsize=18, rotation=0)
+print(regr.feature_importances_)
 
-
-plt.figure(figsize=(6, 4))
-
-for i in range(15):
-    tree_clf = DecisionTreeClassifier(max_leaf_nodes=16, random_state=42 + i)
-    indices_with_replacement = np.random.randint(0, len(X_train), len(X_train))
-    tree_clf.fit(X[indices_with_replacement], y[indices_with_replacement])
-    plot_decision_boundary(tree_clf, X, y, axes=[-1.5, 2.45, -1, 1.5], alpha=0.02, contour=False)
-
-plt.show()
+print(regr.predict([[0, 0, 0, 0]]))

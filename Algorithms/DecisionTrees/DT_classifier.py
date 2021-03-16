@@ -1,3 +1,37 @@
+#%% Decision Trees CLASIFICATION
+#clasificacion dos clases: gini impurity (1-prob(yes)^2 - prob(no)^2 para cada leaf, y luego 
+#media ponderada con las dos leafs) entre clasificacion
+#segun el primer predictor y la variable objetivo, segundo predictor y objetivo, etc. Coger
+#menor gini como root. Repetir proceso
+#Si la variable es continua, tomar valores medios entre registros, y calcular gini impurity igual
+#Si el predictor es de varios tipos, calcular gini con cada combinacion: red, green, blue --> se
+#calcula con red, green, blue, red-green, red-blue, green-blue.
+#A veces hacer un nodo extra aumenta gini impurity. Entonces se meten todos los casos en la misma
+#hoja y no se hace el nodo
+
+from sklearn.datasets import load_iris
+from sklearn import tree
+X, y = load_iris(return_X_y=True)
+clf = tree.DecisionTreeClassifier()
+clf = clf.fit(X, y)
+
+tree.plot_tree(clf.fit(X, y)) 
+
+from sklearn.datasets import load_iris
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree.export import export_text
+iris = load_iris()
+decision_tree = DecisionTreeClassifier(random_state=0, max_depth=2)
+decision_tree = decision_tree.fit(iris.data, iris.target)
+r = export_text(decision_tree, feature_names=iris['feature_names'])
+print(r)
+
+
+
+
+
+#%%
+#%% DECISION TREE CLASSIFIER
 from sklearn.datasets import load_iris
 from sklearn.tree import DecisionTreeClassifier
 import os
